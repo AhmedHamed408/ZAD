@@ -24,8 +24,10 @@ class WalletProvider extends ChangeNotifier {
   }
 
   void selectCurrency(String code) {
-    _selectedCurrencyCode = code;
-    notifyListeners();
+    if (ArabCurrencies.isSupportedCurrency(code)) {
+      _selectedCurrencyCode = code;
+      notifyListeners();
+    }
   }
 
   void deductBalanceEGP(double amountInEGP) {

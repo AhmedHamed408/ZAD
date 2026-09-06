@@ -301,19 +301,18 @@ class MockChats {
     ],
   };
 
+  static Map<String, List<ChatMessageModel>> getInitialChats() {
+    final copy = <String, List<ChatMessageModel>>{};
+    _chats.forEach((k, v) {
+      copy[k] = List.from(v);
+    });
+    return copy;
+  }
+
   static List<ChatMessageModel> getChatForUser(String userId) {
     if (_chats.containsKey(userId)) {
-      return _chats[userId]!;
+      return List.from(_chats[userId]!);
     }
-    // Default mock conversation fallback
-    return [
-      ChatMessageModel(
-        id: 'msg_fallback_1',
-        senderId: userId,
-        receiverId: 'user_001',
-        message: 'أهلاً بك! تواصل معي عبر زاد.',
-        timestamp: DateTime.now().subtract(const Duration(hours: 1)),
-      ),
-    ];
+    return [];
   }
 }

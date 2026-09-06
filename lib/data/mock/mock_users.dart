@@ -145,4 +145,24 @@ class MockUsers {
       isOnline: false,
     ),
   ];
+
+  static UserModel getUserById(String id) {
+    try {
+      return allUsers.firstWhere((u) => u.id == id);
+    } catch (_) {
+      return UserModel(
+        id: id,
+        name: 'ZAD User',
+        phone: '01000000000',
+        email: 'user@zad.demo',
+        nationalId: '00000000000000',
+        birthDate: '2000-01-01',
+        profileImage: 'https://i.pravatar.cc/300?img=12',
+        balance: 0.0,
+        currency: 'EGP',
+        location: 'Cairo, Egypt',
+        isOnline: false,
+      );
+    }
+  }
 }

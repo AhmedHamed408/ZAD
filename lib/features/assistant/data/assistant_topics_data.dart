@@ -99,7 +99,7 @@ class AssistantTopicsData {
         AssistantStepModel(
           stepNumber: 2,
           title: 'Multi-Currency Switcher',
-          description: 'Tap currency chips (EGP 🇪🇬, USD 🇺🇸, EUR 🇪🇺, SAR 🇸🇦, AED 🇦🇪) to instantly convert your balance display.',
+          description: 'Tap currency chips (EGP 🇪🇬, SAR 🇸🇦, AED 🇦🇪, KWD 🇰🇼, QAR 🇶🇦...) to instantly convert your balance display across 22 Arab countries.',
           icon: Icons.currency_exchange_rounded,
         ),
         AssistantStepModel(

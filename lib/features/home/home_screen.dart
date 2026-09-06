@@ -10,6 +10,7 @@ import '../../core/constants/app_styles.dart';
 import '../../core/utils/currency_formatter.dart';
 import '../../core/widgets/zad_logo.dart';
 import '../../data/models/transaction_model.dart';
+import 'widgets/zad_currency_selector_sheet.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -368,44 +369,79 @@ class _HomeScreenState extends State<HomeScreen> {
                     // Currency Selector Chips Row
                     Row(
                       children: [
-                        Text(
-                          'Currency: ',
-                          style: TextStyle(
-                            color: Colors.white.withValues(alpha: 0.85),
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
+                        GestureDetector(
+                          onTap: () => ZadCurrencySelectorSheet.show(context),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Row(
+                              children: [
+                                Text(
+                                  'Currency 🌐',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Icon(Icons.arrow_drop_down_rounded, color: Colors.white, size: 18),
+                              ],
+                            ),
                           ),
                         ),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: SingleChildScrollView(
                             scrollDirection: Axis.horizontal,
                             child: Row(
-                              children: walletProvider.currencies.map((curr) {
-                                final isSelected = curr.code == walletProvider.selectedCurrencyCode;
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 6.0),
-                                  child: GestureDetector(
-                                    onTap: () => walletProvider.selectCurrency(curr.code),
-                                    child: AnimatedContainer(
-                                      duration: const Duration(milliseconds: 200),
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                      decoration: BoxDecoration(
-                                        color: isSelected ? AppColors.accent : Colors.white.withValues(alpha: 0.15),
-                                        borderRadius: BorderRadius.circular(16),
-                                      ),
-                                      child: Text(
-                                        '${curr.flag} ${curr.code}',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                          color: Colors.white,
+                              children: [
+                                ...walletProvider.currencies.take(8).map((curr) {
+                                  final isSelected = curr.code == walletProvider.selectedCurrencyCode;
+                                  return Padding(
+                                    padding: const EdgeInsets.only(right: 6.0),
+                                    child: GestureDetector(
+                                      onTap: () => walletProvider.selectCurrency(curr.code),
+                                      child: AnimatedContainer(
+                                        duration: const Duration(milliseconds: 200),
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                        decoration: BoxDecoration(
+                                          color: isSelected ? AppColors.accent : Colors.white.withValues(alpha: 0.15),
+                                          borderRadius: BorderRadius.circular(16),
+                                        ),
+                                        child: Text(
+                                          '${curr.flag} ${curr.code}',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                            color: Colors.white,
+                                          ),
                                         ),
                                       ),
                                     ),
+                                  );
+                                }),
+                                GestureDetector(
+                                  onTap: () => ZadCurrencySelectorSheet.show(context),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white.withValues(alpha: 0.2),
+                                      borderRadius: BorderRadius.circular(16),
+                                    ),
+                                    child: const Text(
+                                      '+ All 22 🌍',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                                   ),
-                                );
-                              }).toList(),
+                                ),
+                              ],
                             ),
                           ),
                         ),

@@ -4,6 +4,10 @@ import '../../providers/transaction_provider.dart';
 import '../../localization/app_localizations.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/utils/currency_formatter.dart';
+import 'widgets/zad_chat_transaction_card.dart';
+import 'widgets/zad_chat_call_card.dart';
+import 'widgets/zad_voice_call_screen.dart';
+import 'widgets/zad_video_call_screen.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -21,31 +25,29 @@ class _ChatScreenState extends State<ChatScreen> {
     super.dispose();
   }
 
-  void _showComingSoonCallDialog(String callType) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Row(
-            children: [
-              Icon(
-                callType == 'Voice' ? Icons.phone_rounded : Icons.videocam_rounded,
-                color: AppColors.primary,
-              ),
-              const SizedBox(width: 10),
-              Text('coming_soon'.tr(context)),
-            ],
-          ),
-          content: Text('calling_feature_note'.tr(context)),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK', style: TextStyle(color: AppColors.primary)),
-            ),
-          ],
-        );
-      },
+  void _startVoiceCall(String userId, String userName, String userAvatar) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ZadVoiceCallScreen(
+          userId: userId,
+          userName: userName,
+          userAvatar: userAvatar,
+        ),
+      ),
+    );
+  }
+
+  void _startVideoCall(String userId, String userName, String userAvatar) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ZadVideoCallScreen(
+          userId: userId,
+          userName: userName,
+          userAvatar: userAvatar,
+        ),
+      ),
     );
   }
 
@@ -110,11 +112,11 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.phone_rounded, color: AppColors.accent),
-            onPressed: () => _showComingSoonCallDialog('Voice'),
+            onPressed: () => _startVoiceCall(userId, userName, userAvatar),
           ),
           IconButton(
             icon: const Icon(Icons.videocam_rounded, color: AppColors.accent),
-            onPressed: () => _showComingSoonCallDialog('Video'),
+            onPressed: () => _startVideoCall(userId, userName, userAvatar),
           ),
           const SizedBox(width: 8),
         ],
@@ -122,128 +124,155 @@ class _ChatScreenState extends State<ChatScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Messages List View
+            // Messages List View OR Empty State
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: messages.length,
-                itemBuilder: (context, index) {
-                  final msg = messages[index];
-                  final bool isMe = msg.senderId == 'user_0';
-
-                  if (msg.isTransaction) {
-                    // Render Embedded Transaction Card inside Chat
-                    return Center(
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(vertical: 12),
-                        padding: const EdgeInsets.all(16),
-                        width: 260,
-                        decoration: BoxDecoration(
-                          color: AppColors.accent.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: AppColors.accent.withValues(alpha: 0.3)),
-                        ),
+              child: messages.isEmpty
+                  ? Center(
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.all(24),
                         child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
+                            Stack(
                               children: [
-                                Icon(Icons.swap_horiz_rounded, color: AppColors.accent),
-                                SizedBox(width: 6),
-                                Text(
-                                  'ZAD Payment',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
+                                Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: const BoxDecoration(
                                     color: AppColors.accent,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 46,
+                                    backgroundImage: NetworkImage(userAvatar),
+                                  ),
+                                ),
+                                Positioned(
+                                  right: 4,
+                                  bottom: 4,
+                                  child: Container(
+                                    width: 16,
+                                    height: 16,
+                                    decoration: BoxDecoration(
+                                      color: AppColors.accent,
+                                      shape: BoxShape.circle,
+                                      border: Border.all(color: Colors.white, width: 2),
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 8),
+                            const SizedBox(height: 16),
                             Text(
-                              CurrencyFormatter.format(
-                                msg.transactionAmount ?? 1500.0,
-                                currency: msg.transactionCurrency ?? 'EGP',
-                              ),
+                              userName,
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: AppColors.success,
-                                borderRadius: BorderRadius.circular(10),
+                            const SizedBox(height: 6),
+                            Text(
+                              'start_conversation'.tr(context),
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.primary,
                               ),
+                            ),
+                            const SizedBox(height: 8),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
                               child: Text(
-                                msg.transactionStatus ?? 'Completed',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
+                                'start_chat_desc'.tr(context),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: isDark
+                                      ? AppColors.darkTextSecondary
+                                      : AppColors.lightTextSecondary,
                                 ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    );
-                  }
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: messages.length,
+                      itemBuilder: (context, index) {
+                        final msg = messages[index];
+                        final bool isMe = msg.senderId == 'user_001';
 
-                  return Align(
-                    alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
-                    child: Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      constraints: BoxConstraints(
-                        maxWidth: MediaQuery.of(context).size.width * 0.75,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isMe
-                            ? AppColors.primary
-                            : (isDark ? AppColors.darkSurface : Colors.grey.shade200),
-                        borderRadius: BorderRadius.only(
-                          topLeft: const Radius.circular(16),
-                          topRight: const Radius.circular(16),
-                          bottomLeft: Radius.circular(isMe ? 16 : 4),
-                          bottomRight: Radius.circular(isMe ? 4 : 16),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment:
-                            isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            msg.message,
-                            style: TextStyle(
-                              fontSize: 14,
+                        if (msg.isCall) {
+                          return ZadChatCallCard(
+                            message: msg,
+                            otherUserName: userName,
+                            currentUserId: 'user_001',
+                          );
+                        }
+
+                        if (msg.isTransaction) {
+                          final tx = txProvider.getTransactionById(msg.transactionId ?? '');
+                          return ZadChatTransactionCard(
+                            message: msg,
+                            otherUserName: userName,
+                            currentUserId: 'user_001',
+                            transaction: tx,
+                          );
+                        }
+
+                        return Align(
+                          alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            constraints: BoxConstraints(
+                              maxWidth: MediaQuery.of(context).size.width * 0.75,
+                            ),
+                            decoration: BoxDecoration(
                               color: isMe
-                                  ? Colors.white
-                                  : (isDark
-                                      ? AppColors.darkTextPrimary
-                                      : AppColors.lightTextPrimary),
+                                  ? AppColors.primary
+                                  : (isDark ? AppColors.darkSurface : Colors.grey.shade200),
+                              borderRadius: BorderRadius.only(
+                                topLeft: const Radius.circular(16),
+                                topRight: const Radius.circular(16),
+                                bottomLeft: Radius.circular(isMe ? 16 : 4),
+                                bottomRight: Radius.circular(isMe ? 4 : 16),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment:
+                                  isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  msg.message,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: isMe
+                                        ? Colors.white
+                                        : (isDark
+                                            ? AppColors.darkTextPrimary
+                                            : AppColors.lightTextPrimary),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  CurrencyFormatter.formatShortDate(msg.timestamp),
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: isMe
+                                        ? Colors.white.withValues(alpha: 0.7)
+                                        : (isDark
+                                            ? AppColors.darkTextSecondary
+                                            : AppColors.lightTextSecondary),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            CurrencyFormatter.formatShortDate(msg.timestamp),
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: isMe
-                                  ? Colors.white.withValues(alpha: 0.7)
-                                  : (isDark
-                                      ? AppColors.darkTextSecondary
-                                      : AppColors.lightTextSecondary),
-                            ),
-                          ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
 
             // Input Bar
